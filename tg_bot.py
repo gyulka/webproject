@@ -12,7 +12,8 @@ async def send_welcome(message: types.Message):
     nick = message.from_user.username
     response=requests.post(db_server_api+'add_user',params={
         'id':user_id,
-        'nick':nick
+        'nick':nick,
+        'vk':'False'
     })
     print(response.json())
     await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")

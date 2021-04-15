@@ -16,11 +16,13 @@ def main():
 @app.route('/api/add_user', methods=['POST'])
 def add_user():
     try:
-        if [user for user in session.query(User).filter(User.id==int(request.args['id']))]:
-            return jsonify(succes=False,error='user is already exists')
+        if [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+                True if request.args['vk'] == 'True' else False))]:
+            return jsonify(succes=False, error='user is already exists')
         user = User()
         user.id = int(request.args['id'])
-        user.score = 0
+        user.vk = False if request.args['vk'] == 'False' else True
+        user.score = 1000
         user.menu = 0
         user.nick = request.args['nick']
         session.add(user)
@@ -35,7 +37,8 @@ def set_nick():
     try:
         id = int(request.args['id'])
         nick = request.args['nick']
-        for user in session.query(User).filter(User.id == id):
+        for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+                True if request.args['vk'] == 'True' else False)):
             user.nick = nick
         session.commit()
         return jsonify(succes=True)
@@ -54,7 +57,8 @@ def get_all_users():
 def get_user():
     user = None
     try:
-        user = [user for user in session.query(User).filter(User.id == int(request.args['id']))][0]
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk==(
+            True if request.args['vk'] == 'True' else False))][0]
         return jsonify(succes=True, id=user.id, nick=user.nick, score=user.score, menu=user.menu)
     except IndexError as error:
         return jsonify(succes=False, error='no user was found')
@@ -67,7 +71,8 @@ def set_menu():
     try:
         id = int(request.args['id'])
         menu = int(request.args['menu'])
-        for user in session.query(User).filter(User.id == id):
+        for user in session.query(User).filter(User.id == int(request.args['id']), User.vk==(
+                True if request.args['vk'] == 'True' else False)):
             user.menu = menu
         session.commit()
         return jsonify(succes=True)
@@ -80,7 +85,8 @@ def add_score():
     try:
         id = int(request.args['id'])
         score = int(request.args['score'])
-        for user in session.query(User).filter(User.id == id):
+        for user in session.query(User).filter(User.id == int(request.args['id']), User.vk==(
+                True if request.args['vk'] == 'True' else False)):
             user.score += score
         session.commit()
         return jsonify(succes=True)
