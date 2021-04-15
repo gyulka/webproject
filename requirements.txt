@@ -1,3 +1,4 @@
 flask
 sqlalchemy
-python-telegram-bot
+aiogram
+requests

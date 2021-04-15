@@ -13,9 +13,11 @@ def main():
     app.run()
 
 
-@app.route('/api/add_user', methods=['POST', 'GET'])
-def api_add_user():
+@app.route('/api/add_user', methods=['POST'])
+def add_user():
     try:
+        if [user for user in session.query(User).filter(User.id==int(request.args['id']))]:
+            return jsonify(succes=False,error='user is already exists')
         user = User()
         user.id = int(request.args['id'])
         user.score = 0
