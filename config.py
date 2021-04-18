@@ -2,7 +2,7 @@
 BUY = 1
 MAIN = 0
 HELPING = 2
-TRANFER=3
+TRANSFER=3
 
 # ---------
 db_server_api = 'http://127.0.0.1:5000/api/'

@@ -1,3 +1,5 @@
+import random
+
 import requests
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
@@ -25,6 +27,32 @@ keyboard_user.add(KeyboardButton('сменить ник'))
 
 
 # ---------------
+
+
+def shablon1():
+    a, b = 0, 1000
+    x = f"({random.randint(-b, b)} {random.choice(['*', '-', '+', '/'])} {random.randint(a, b)}) {random.choice(['*', '-', '+', '/'])} ({random.randint(-b, b)} {random.choice(['*', '-', '+', '/'])} {random.randint(a, b)})"
+    return x, eval(x)
+
+
+async def gen_primer(message):
+    shablon = random.choice([shablon1])
+    text, ans = shablon()
+    ans = round(ans, 2)
+    requests.post(db_server_api + 'set_helping', params={
+        'vk': False,
+        'id': message.from_user.id,
+        'helping': ans
+    })
+    requests.post(db_server_api + 'set_menu', params={
+        'vk': False,
+        'id': message.from_user.id,
+        'menu': config.HELPING
+    })
+    print(ans)
+    await message.answer('Решите\n' + text + '\nчтобы прекратить, нажмите на любую кнопку')
+
+
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     user_id = message.from_user.id
@@ -62,14 +90,16 @@ async def messages(message: types.Message):
         requests.post(config.db_server_api + 'set_menu', params={
             'id': message.from_user.id,
             'vk': False,
-            'menu': config.TRANFER
+            'menu': config.TRANSFER
         })
         await message.answer('введите сумму и id куда перевести через пробел')
+    elif message.text == 'помочь':
+        await gen_primer(message)
 
 
-    elif response['menu'] == config.TRANFER:
+    elif response['menu'] == config.TRANSFER:
         summ, id = message.text.split()
-        response = requests.post(config.db_server_api + 'tranfer', params={
+        response = requests.post(config.db_server_api + 'transfer', params={
             'vk': False,
             'id': message.from_user.id,
             'score': summ,
@@ -77,17 +107,28 @@ async def messages(message: types.Message):
         }).json()
         if response['succes']:
             await message.answer(f'успешно переведено {summ} {response["nick_to"]}')
+            requests.post(db_server_api + 'set_menu', params={
+                'vk': False,
+                'id': message.from_user.id,
+                'menu': 0
+            })
+        else:
+            print(response['error'])
+    elif response['menu'] == config.HELPING:
+        if message.text == response['helping']:
+            requests.post(db_server_api + 'add_score', params={
+                'vk': False,
+                'id': message.from_user.id,
+                'score': 10
+            })
+            await message.answer('вам добавили 1')
+            await gen_primer(message)
+        else:
+            await message.answer('неверный ответ\nдля нового примера, нажмите на кнопку второй раз')
 
 
 @dp.callback_query_handler()
 async def call_back(callback: types.CallbackQuery):
-    menu = requests.get(config.db_server_api + 'get_user', params={
-        'id': callback.from_user.id,
-        'vk': False
-    }).json()
-    print(menu)
-    menu = menu['menu']
-
     resrponse = requests.post(config.db_server_api + callback.data, params={
         'id': callback.from_user.id,
         'vk': False

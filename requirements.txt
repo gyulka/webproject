@@ -3,3 +3,4 @@ sqlalchemy
 aiogram
 requests
 schedule
+https://github.com/timoniq/vkbottle/archive/master.zip

@@ -43,10 +43,12 @@ def add_user():
         user.count4 = 0
         user.count5 = 0
         user.nick = request.args['nick']
+        user.helping=None
         session.add(user)
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
+        app.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
@@ -61,72 +63,91 @@ def set_nick():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
+        app.log_exception(error.__str__())
         jsonify(succes=False, error=error.__str__())
 
 
 @app.route('/api/buy_1', methods=['POST'])
 def buy_1():
-    user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
-        True if request.args['vk'] == 'True' else False))][0]
-    if user.score >= config.price1 * (1.1 ** user.count1):
-        user.score -= config.price1 * (1.1 ** user.count1)
-        user.count1 += 1
-        session.commit()
-        return jsonify(succes=True)
-    else:
-        return jsonify(succes=False, error='not enough money')
+    try:
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+            True if request.args['vk'] == 'True' else False))][0]
+        if user.score >= config.price1 * (1.1 ** user.count1):
+            user.score -= config.price1 * (1.1 ** user.count1)
+            user.count1 += 1
+            session.commit()
+            return jsonify(succes=True)
+        else:
+            return jsonify(succes=False, error='not enough money')
+    except Exception as error:
+        app.log_exception(error.__str__())
+        return jsonify(succes = False,error=error.__str__())
 
 
 @app.route('/api/buy_2', methods=['POST'])
 def buy_2():
-    user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
-        True if request.args['vk'] == 'True' else False))][0]
-    if user.score >= config.price1 * (1.1 ** user.count2):
-        user.score -= config.price1 * (1.1 ** user.count2)
-        user.count2 += 1
-        session.commit()
-        return jsonify(succes=True)
-    else:
-        return jsonify(succes=False, error='not enough money')
-
+    try:
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+            True if request.args['vk'] == 'True' else False))][0]
+        if user.score >= config.price1 * (1.1 ** user.count2):
+            user.score -= config.price1 * (1.1 ** user.count2)
+            user.count2 += 1
+            session.commit()
+            return jsonify(succes=True)
+        else:
+            return jsonify(succes=False, error='not enough money')
+    except Exception as error:
+        app.log_exception(error.__str__())
+        return jsonify(succes = False,error=error.__str__())
 
 @app.route('/api/buy_3', methods=['POST'])
 def buy_3():
-    user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
-        True if request.args['vk'] == 'True' else False))][0]
-    if user.score >= config.price1 * (1.1 ** user.count3):
-        user.score -= config.price1 * (1.1 ** user.count3)
-        user.count3 += 1
-        session.commit()
-        return jsonify(succes=True)
-    else:
-        return jsonify(succes=False, error='not enough money')
+    try:
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+            True if request.args['vk'] == 'True' else False))][0]
+        if user.score >= config.price1 * (1.1 ** user.count3):
+            user.score -= config.price1 * (1.1 ** user.count3)
+            user.count3 += 1
+            session.commit()
+            return jsonify(succes=True)
+        else:
+            return jsonify(succes=False, error='not enough money')
+    except Exception as error:
+        app.log_exception(error.__str__())
+        return jsonify(succes = False,error=error.__str__())
 
 
 @app.route('/api/buy_4', methods=['POST'])
 def buy_4():
-    user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
-        True if request.args['vk'] == 'True' else False))][0]
-    if user.score >= config.price1 * (1.1 ** user.count4):
-        user.score -= config.price1 * (1.1 ** user.count4)
-        user.count4 += 1
-        session.commit()
-        return jsonify(succes=True)
-    else:
-        return jsonify(succes=False, error='not enough money')
-
+    try:
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+            True if request.args['vk'] == 'True' else False))][0]
+        if user.score >= config.price1 * (1.1 ** user.count4):
+            user.score -= config.price1 * (1.1 ** user.count4)
+            user.count4 += 1
+            session.commit()
+            return jsonify(succes=True)
+        else:
+            return jsonify(succes=False, error='not enough money')
+    except Exception as error:
+        app.log_exception(error.__str__())
+        return jsonify(succes = False,error=error.__str__())
 
 @app.route('/api/buy_5', methods=['POST'])
 def buy_5():
-    user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
-        True if request.args['vk'] == 'True' else False))][0]
-    if user.score >= config.price1 * (1.1 ** user.count5):
-        user.score -= config.price1 * (1.1 ** user.count5)
-        user.count5 += 1
-        session.commit()
-        return jsonify(succes=True)
-    else:
-        return jsonify(succes=False, error='not enough money')
+    try:
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+            True if request.args['vk'] == 'True' else False))][0]
+        if user.score >= config.price1 * (1.1 ** user.count5):
+            user.score -= config.price1 * (1.1 ** user.count5)
+            user.count5 += 1
+            session.commit()
+            return jsonify(succes=True)
+        else:
+            return jsonify(succes=False, error='not enough money')
+    except Exception as error:
+        app.log_exception(error.__str__())
+        return jsonify(succes = False,error=error.__str__())
 
 
 @app.route('/api/get_all_users')  # не использовать, только для тестов
@@ -144,10 +165,11 @@ def get_user():
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
         return jsonify(succes=True, id=user.id, nick=user.nick, score=user.score, menu=user.menu, count1=user.count1,
-                       count2=user.count2, count3=user.count3, count4=user.count4, count5=user.count5, )
+                       count2=user.count2, count3=user.count3, count4=user.count4, count5=user.count5, helping = user.helping)
     except IndexError as error:
         return jsonify(succes=False, error='no user was found')
     except Exception as error:
+        app.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
@@ -162,6 +184,7 @@ def set_menu():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
+        app.log_exception(error.__str__())
         jsonify(succes=False, error=error.__str__())
 
 
@@ -177,6 +200,7 @@ def add_score():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
+        app.log_exception(error.__str__())
         jsonify(succes=False, error=error.__str__())
 
 
@@ -188,10 +212,11 @@ def update():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
+        app.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/tranfer')
+@app.route('/api/transfer',methods=['POST'])
 def transfer():
     try:
         summ = int(request.args['score'])
@@ -207,8 +232,23 @@ def transfer():
             user_from.score -= summ
             user_to.score += summ
             session.commit()
+            return jsonify(succes=True,nick_to=user_to.nick)
+        else:
+            return jsonify(succes=False, error='not enough money')
     except Exception as error:
+        app.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
+
+@app.route('/api/set_helping',methods=['POST'])
+def set_helping():
+    try:
+        user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
+            True if request.args['vk'] == 'True' else False))][0]
+        user.helping=request.args['helping']
+        session.commit()
+    except Exception as error:
+        app.log_exception(error.__str__())
+        return jsonify(succes=False,error=error.__str__())
 
 
 if __name__ == '__main__':

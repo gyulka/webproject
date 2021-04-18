@@ -1,5 +1,3 @@
-# This Python file uses the following encoding: utf-8
-
 from vkbottle import API
 import asyncio
 from vkbottle.bot import Bot, Message
