@@ -250,6 +250,10 @@ def set_helping():
         app.log_exception(error.__str__())
         return jsonify(succes=False,error=error.__str__())
 
+@app.route('/')
+def index():
+    return '<h1>Привет!</h1>'
+
 
 if __name__ == '__main__':
     main()
