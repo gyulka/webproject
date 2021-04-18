@@ -1,3 +1,4 @@
+import os
 from threading import Thread
 
 import requests
@@ -23,7 +24,8 @@ def main():
     session = db_session.create_session()
     th = Thread(target=updater)
     th.start()
-    app.run(port=80)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 @app.route('/api/add_user', methods=['POST'])
