@@ -23,7 +23,7 @@ def main():
     session = db_session.create_session()
     th = Thread(target=updater)
     th.start()
-    app.run()
+    app.run(port=5000)
 
 
 @app.route('/api/add_user', methods=['POST'])
@@ -43,7 +43,7 @@ def add_user():
         user.count4 = 0
         user.count5 = 0
         user.nick = request.args['nick']
-        user.helping=None
+        user.helping = None
         session.add(user)
         session.commit()
         return jsonify(succes=True)
@@ -81,7 +81,7 @@ def buy_1():
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
         app.log_exception(error.__str__())
-        return jsonify(succes = False,error=error.__str__())
+        return jsonify(succes=False, error=error.__str__())
 
 
 @app.route('/api/buy_2', methods=['POST'])
@@ -98,7 +98,8 @@ def buy_2():
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
         app.log_exception(error.__str__())
-        return jsonify(succes = False,error=error.__str__())
+        return jsonify(succes=False, error=error.__str__())
+
 
 @app.route('/api/buy_3', methods=['POST'])
 def buy_3():
@@ -114,7 +115,7 @@ def buy_3():
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
         app.log_exception(error.__str__())
-        return jsonify(succes = False,error=error.__str__())
+        return jsonify(succes=False, error=error.__str__())
 
 
 @app.route('/api/buy_4', methods=['POST'])
@@ -131,7 +132,8 @@ def buy_4():
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
         app.log_exception(error.__str__())
-        return jsonify(succes = False,error=error.__str__())
+        return jsonify(succes=False, error=error.__str__())
+
 
 @app.route('/api/buy_5', methods=['POST'])
 def buy_5():
@@ -147,7 +149,7 @@ def buy_5():
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
         app.log_exception(error.__str__())
-        return jsonify(succes = False,error=error.__str__())
+        return jsonify(succes=False, error=error.__str__())
 
 
 @app.route('/api/get_all_users')  # не использовать, только для тестов
@@ -164,7 +166,8 @@ def get_user():
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
         return jsonify(succes=True, id=user.id, nick=user.nick, score=user.score, menu=user.menu, count1=user.count1,
-                       count2=user.count2, count3=user.count3, count4=user.count4, count5=user.count5, helping = user.helping)
+                       count2=user.count2, count3=user.count3, count4=user.count4, count5=user.count5,
+                       helping=user.helping)
     except IndexError as error:
         return jsonify(succes=False, error='no user was found')
     except Exception as error:
@@ -215,7 +218,7 @@ def update():
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/transfer',methods=['POST'])
+@app.route('/api/transfer', methods=['POST'])
 def transfer():
     try:
         summ = int(request.args['score'])
@@ -231,24 +234,26 @@ def transfer():
             user_from.score -= summ
             user_to.score += summ
             session.commit()
-            return jsonify(succes=True,nick_to=user_to.nick)
+            return jsonify(succes=True, nick_to=user_to.nick)
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
         app.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
-@app.route('/api/set_helping',methods=['POST'])
+
+@app.route('/api/set_helping', methods=['POST'])
 def set_helping():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
-        user.helping=request.args['helping']
+        user.helping = request.args['helping']
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
         app.log_exception(error.__str__())
-        return jsonify(succes=False,error=error.__str__())
+        return jsonify(succes=False, error=error.__str__())
+
 
 @app.route('/')
 def index():
