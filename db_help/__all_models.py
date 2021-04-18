@@ -1,5 +1,6 @@
-import config
 import sqlalchemy
+
+import config
 from .db_session import SqlAlchemyBase
 
 

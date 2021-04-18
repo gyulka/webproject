@@ -26,7 +26,7 @@ def main():
     app.run()
 
 
-@app.route('/api/add_user')
+@app.route('/api/add_user', methods=['POST'])
 def add_user():
     try:
         if [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -50,7 +50,7 @@ def add_user():
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/set_nick')
+@app.route('/api/set_nick', methods=['POST'])
 def set_nick():
     try:
         id = int(request.args['id'])
@@ -64,7 +64,7 @@ def set_nick():
         jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/buy_1')
+@app.route('/api/buy_1', methods=['POST'])
 def buy_1():
     user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
         True if request.args['vk'] == 'True' else False))][0]
@@ -77,7 +77,7 @@ def buy_1():
         return jsonify(succes=False, error='not enough money')
 
 
-@app.route('/api/buy_2')
+@app.route('/api/buy_2', methods=['POST'])
 def buy_2():
     user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
         True if request.args['vk'] == 'True' else False))][0]
@@ -90,7 +90,7 @@ def buy_2():
         return jsonify(succes=False, error='not enough money')
 
 
-@app.route('/api/buy_3')
+@app.route('/api/buy_3', methods=['POST'])
 def buy_3():
     user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
         True if request.args['vk'] == 'True' else False))][0]
@@ -103,7 +103,7 @@ def buy_3():
         return jsonify(succes=False, error='not enough money')
 
 
-@app.route('/api/buy_4')
+@app.route('/api/buy_4', methods=['POST'])
 def buy_4():
     user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
         True if request.args['vk'] == 'True' else False))][0]
@@ -116,7 +116,7 @@ def buy_4():
         return jsonify(succes=False, error='not enough money')
 
 
-@app.route('/api/buy_5')
+@app.route('/api/buy_5', methods=['POST'])
 def buy_5():
     user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
         True if request.args['vk'] == 'True' else False))][0]
@@ -136,8 +136,9 @@ def get_all_users():
     return jsonify(succes=True)
 
 
-@app.route('/api/get_user')
+@app.route('/api/get_user', methods=['GET'])
 def get_user():
+    print(request.args)
     user = None
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -150,7 +151,7 @@ def get_user():
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/set_menu')
+@app.route('/api/set_menu', methods=['POST'])
 def set_menu():
     try:
         id = int(request.args['id'])
@@ -164,7 +165,7 @@ def set_menu():
         jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/add_score')
+@app.route('/api/add_score', methods=['POST'])
 def add_score():
     try:
         id = int(request.args['id'])
@@ -181,11 +182,31 @@ def add_score():
 
 @app.route('/api/update')
 def update():
-    print(1)
     try:
         for user in session.query(User):
             user.update()
+        session.commit()
         return jsonify(succes=True)
+    except Exception as error:
+        return jsonify(succes=False, error=error.__str__())
+
+
+@app.route('/api/tranfer')
+def transfer():
+    try:
+        summ = int(request.args['score'])
+        id_to = request.args['id_to']
+        id_to, vk = id_to.split('_')
+        id_from = int(request.args['id'])
+        vk_from = True if request.args['vk'] == 'True' else False
+        vk = bool(int(vk))
+        id_to = int(id_to)
+        user_from = [user for user in session.query(User).filter(User.id == id_from, User.vk == vk_from)][0]
+        if user_from.score >= summ:
+            user_to = [user for user in session.query(User).filter(User.id == id_to, User.vk == vk)][0]
+            user_from.score -= summ
+            user_to.score += summ
+            session.commit()
     except Exception as error:
         return jsonify(succes=False, error=error.__str__())
 
