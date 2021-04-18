@@ -23,7 +23,7 @@ def main():
     session = db_session.create_session()
     th = Thread(target=updater)
     th.start()
-    app.run(port=5000)
+    app.run(port=80)
 
 
 @app.route('/api/add_user', methods=['POST'])
