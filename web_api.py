@@ -19,6 +19,8 @@ def updater():
 
 
 def main():
+    import tg_bot
+    tg_bot.main()
     global session
     db_session.global_init("db/db.db")
     session = db_session.create_session()

@@ -6,7 +6,7 @@ TRANSFER=3
 CHANGE=4
 
 # ---------
-db_server_api = 'http://testprojectyal.herokuapp.com:5000/api/'
+db_server_api = 'http://testprojectyal.herokuapp.com/api/'
 TOKEN = '1718142674:AAEgSqiGD8Lm8ZT9FdcgsVY-iev_MiFEaQo'
 # ----------цены
 price1 = 1000
