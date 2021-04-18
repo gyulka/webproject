@@ -11,19 +11,20 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 # -----клавиатуры
-keyboard_main = ReplyKeyboardMarkup()
+keyboard_main = ReplyKeyboardMarkup(resize_keyboard=True)
 keyboard_main.add(KeyboardButton('купить'), KeyboardButton('помочь'), )
 keyboard_main.add(KeyboardButton('профиль'), KeyboardButton('перевести'), )
 
-keyboard_buy = InlineKeyboardMarkup()
+keyboard_buy = InlineKeyboardMarkup(resize_keyboard=True)
 keyboard_buy.add(InlineKeyboardButton('1 разработчик', callback_data='buy_1'))
 keyboard_buy.add(InlineKeyboardButton('команда из 3', callback_data='buy_2'))
 keyboard_buy.add(InlineKeyboardButton('команда из 5', callback_data='buy_3'))
 keyboard_buy.add(InlineKeyboardButton('небольшая студия из 10', callback_data='buy_4'))
 keyboard_buy.add(InlineKeyboardButton('крупная студия 30 человек', callback_data='buy_5'))
 
-keyboard_user = ReplyKeyboardMarkup()
+keyboard_user = ReplyKeyboardMarkup(resize_keyboard=True)
 keyboard_user.add(KeyboardButton('сменить ник'))
+keyboard_user.add(KeyboardButton('назад'))
 
 
 # ---------------
@@ -42,7 +43,7 @@ async def gen_primer(message):
     requests.post(db_server_api + 'set_helping', params={
         'vk': False,
         'id': message.from_user.id,
-        'helping': ans
+        'helping': str(ans)
     })
     requests.post(db_server_api + 'set_menu', params={
         'vk': False,
@@ -95,6 +96,15 @@ async def messages(message: types.Message):
         await message.answer('введите сумму и id куда перевести через пробел')
     elif message.text == 'помочь':
         await gen_primer(message)
+    elif message.text == 'назад':
+        await send_welcome(message)
+    elif message.text == 'сменить ник':
+        requests.post(db_server_api + 'set_menu', params={
+            'id': message.from_user.id,
+            'vk': False,
+            'menu': config.CHANGE
+        })
+        await message.answer('введите желаемый ник')
 
 
     elif response['menu'] == config.TRANSFER:
@@ -112,6 +122,12 @@ async def messages(message: types.Message):
                 'id': message.from_user.id,
                 'menu': 0
             })
+            requests.post(db_server_api + 'set_menu', params={
+                'vk': False,
+                'id': message.from_user.id,
+                'menu': config.MAIN
+            })
+
         else:
             print(response['error'])
     elif response['menu'] == config.HELPING:
@@ -125,6 +141,19 @@ async def messages(message: types.Message):
             await gen_primer(message)
         else:
             await message.answer('неверный ответ\nдля нового примера, нажмите на кнопку второй раз')
+    elif response['menu'] == config.CHANGE:
+        nick = message.text
+        requests.post(db_server_api + 'set_nick', params={
+            'vk': False,
+            'id': message.from_user.id,
+            'nick': nick
+        })
+        requests.post(db_server_api + 'set_menu', params={
+            'vk': False,
+            'id': message.from_user.id,
+            'menu': config.MAIN
+        })
+        await message.answer(f'ник успешно изменён на {message.text}', reply_markup=keyboard_main)
 
 
 @dp.callback_query_handler()
@@ -138,6 +167,9 @@ async def call_back(callback: types.CallbackQuery):
     else:
         await callback.message.edit_text('не хватает денег')
 
+def main():
+    executor.start_polling(dp, skip_updates=True)
+
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    main()

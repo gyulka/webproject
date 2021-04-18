@@ -159,7 +159,6 @@ def get_all_users():
 
 @app.route('/api/get_user', methods=['GET'])
 def get_user():
-    print(request.args)
     user = None
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -246,6 +245,7 @@ def set_helping():
             True if request.args['vk'] == 'True' else False))][0]
         user.helping=request.args['helping']
         session.commit()
+        return jsonify(succes=True)
     except Exception as error:
         app.log_exception(error.__str__())
         return jsonify(succes=False,error=error.__str__())
