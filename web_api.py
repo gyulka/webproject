@@ -24,9 +24,6 @@ def main():
     session = db_session.create_session()
     th = Thread(target=updater)
     th.start()
-    import tg_bot
-    th2 = Thread(target=tg_bot.main)
-    th2.start()
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
 
