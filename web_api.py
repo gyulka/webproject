@@ -91,8 +91,8 @@ def buy_2():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
-        if user.score >= config.price1 * (1.1 ** user.count2):
-            user.score -= config.price1 * (1.1 ** user.count2)
+        if user.score >= config.price2 * (1.1 ** user.count2):
+            user.score -= config.price2 * (1.1 ** user.count2)
             user.count2 += 1
             session.commit()
             return jsonify(succes=True)
@@ -108,8 +108,8 @@ def buy_3():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
-        if user.score >= config.price1 * (1.1 ** user.count3):
-            user.score -= config.price1 * (1.1 ** user.count3)
+        if user.score >= config.price3 * (1.1 ** user.count3):
+            user.score -= config.price3 * (1.1 ** user.count3)
             user.count3 += 1
             session.commit()
             return jsonify(succes=True)
@@ -125,8 +125,8 @@ def buy_4():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
-        if user.score >= config.price1 * (1.1 ** user.count4):
-            user.score -= config.price1 * (1.1 ** user.count4)
+        if user.score >= config.price4 * (1.1 ** user.count4):
+            user.score -= config.price4 * (1.1 ** user.count4)
             user.count4 += 1
             session.commit()
             return jsonify(succes=True)
@@ -142,8 +142,8 @@ def buy_5():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
             True if request.args['vk'] == 'True' else False))][0]
-        if user.score >= config.price1 * (1.1 ** user.count5):
-            user.score -= config.price1 * (1.1 ** user.count5)
+        if user.score >= config.price5 * (1.1 ** user.count5):
+            user.score -= config.price5 * (1.1 ** user.count5)
             user.count5 += 1
             session.commit()
             return jsonify(succes=True)
