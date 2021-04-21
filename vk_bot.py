@@ -248,10 +248,16 @@ async def eat_handler(message: Message, item: Optional[str] = None):
 @bot.on.message(text=["/user <item>"])
 @bot.on.message(payload={"cmd": 'user'})
 async def change(message: Message, item: Optional[str] = None):
-    if item is None:
-        nick = message.text
+    txt = message.text.split()[-1]
+    if txt == 'Меню':
+        await message.answer(f'Вернулись', keyboard=keyboard_main)
     else:
-        nick = item
+        await message.answer(f'смена ника. Введите свой новый ник. Формат ввода')
+        await message.answer(f'!nik ник')
+
+@bot.on.message(text='!nik <item>')
+async def transfer(message: Message, item: str):
+    nick = item
     user_info = await bot.api.users.get(message.from_id)
     user_id = user_info[0].id
     requests.post(db_server_api + 'set_nick', params={
@@ -264,7 +270,7 @@ async def change(message: Message, item: Optional[str] = None):
         'id': user_id,
         'menu': config.MAIN
     })
-    await message.answer(f'ник успешно изменён на {message.text}', keyboard=keyboard_main)
+    await message.answer(f'ник успешно изменён на {nick}', keyboard=keyboard_main)
 
 
 
