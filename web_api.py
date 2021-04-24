@@ -1,9 +1,10 @@
+import random
 import os
 from threading import Thread
 
 import requests
 import schedule
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 
 import config
 from db_help import db_session
@@ -11,11 +12,17 @@ from db_help.__all_models import User
 
 app = Flask(__name__)
 
+api = Blueprint('api', __name__)
+
 
 def updater():
     schedule.every().hours.at(':00').do(requests.get, config.db_server_api + 'update')
     while True:
         schedule.run_pending()
+
+
+def best_of_3():
+    schedule.every(3).days.at('12:00').do(requests.get, config.db_server_api + 'best_of_3')
 
 
 def main():
@@ -25,10 +32,11 @@ def main():
     th = Thread(target=updater)
     th.start()
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.register_blueprint(api)
+    app.run(host='127.0.0.1', port=port)
 
 
-@app.route('/api/add_user', methods=['POST'])
+@api.route('/api/add_user', methods=['POST'])
 def add_user():
     try:
         if [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -50,11 +58,11 @@ def add_user():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/set_nick', methods=['POST'])
+@api.route('/api/set_nick', methods=['POST'])
 def set_nick():
     try:
         id = int(request.args['id'])
@@ -65,11 +73,11 @@ def set_nick():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/buy_1', methods=['POST'])
+@api.route('/api/buy_1', methods=['POST'])
 def buy_1():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -82,11 +90,11 @@ def buy_1():
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/buy_2', methods=['POST'])
+@api.route('/api/buy_2', methods=['POST'])
 def buy_2():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -99,11 +107,11 @@ def buy_2():
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/buy_3', methods=['POST'])
+@api.route('/api/buy_3', methods=['POST'])
 def buy_3():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -116,11 +124,11 @@ def buy_3():
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/buy_4', methods=['POST'])
+@api.route('/api/buy_4', methods=['POST'])
 def buy_4():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -133,11 +141,11 @@ def buy_4():
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/buy_5', methods=['POST'])
+@api.route('/api/buy_5', methods=['POST'])
 def buy_5():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -150,18 +158,18 @@ def buy_5():
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/get_all_users')  # не использовать, только для тестов
+@api.route('/api/get_all_users')  # не использовать, только для тестов
 def get_all_users():
     for user in session.query(User):
         print(user.id)
     return jsonify(succes=True)
 
 
-@app.route('/api/get_user', methods=['GET'])
+@api.route('/api/get_user', methods=['GET'])
 def get_user():
     user = None
     try:
@@ -173,11 +181,11 @@ def get_user():
     except IndexError as error:
         return jsonify(succes=False, error='no user was found')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/set_menu', methods=['POST'])
+@api.route('/api/set_menu', methods=['POST'])
 def set_menu():
     try:
         id = int(request.args['id'])
@@ -188,11 +196,11 @@ def set_menu():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/add_score', methods=['POST'])
+@api.route('/api/add_score', methods=['POST'])
 def add_score():
     try:
         id = int(request.args['id'])
@@ -204,11 +212,11 @@ def add_score():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/update')
+@api.route('/api/update')
 def update():
     try:
         for user in session.query(User):
@@ -216,11 +224,11 @@ def update():
         session.commit()
         return jsonify(succes=True)
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/transfer', methods=['POST'])
+@api.route('/api/transfer', methods=['POST'])
 def transfer():
     try:
         summ = int(request.args['score'])
@@ -240,11 +248,11 @@ def transfer():
         else:
             return jsonify(succes=False, error='not enough money')
     except Exception as error:
-        app.log_exception(error.__str__())
+        api.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
 
 
-@app.route('/api/set_helping', methods=['POST'])
+@api.route('/api/set_helping', methods=['POST'])
 def set_helping():
     try:
         user = [user for user in session.query(User).filter(User.id == int(request.args['id']), User.vk == (
@@ -255,6 +263,21 @@ def set_helping():
     except Exception as error:
         app.log_exception(error.__str__())
         return jsonify(succes=False, error=error.__str__())
+
+
+@api.route('/api/best_of_3')
+def best_3():
+    lis = [[] for i in range(5)]
+    for j in range(5):
+        for i in session.query(User).all():
+            lis[j].extend([i for _ in range(eval(f'i.count{j+1}'))])
+    for j, i in enumerate(lis):
+        if i:
+            user = random.choice(i)
+            user.score += eval(f'config.price{j+1}') * 1.1 ** (5 + eval(f'user.count{j+1}'))
+            user.score = round(user.score)
+    session.commit()
+    return jsonify(success=True)
 
 
 @app.route('/')

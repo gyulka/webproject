@@ -75,7 +75,13 @@ async def messages(message: types.Message):
         'vk': False
     }).json()
     if message.text == 'купить':
-        await message.answer('выберите из списка:', reply_markup=keyboard_buy)
+        await message.answer(f'''выберите из списка:
+1 разработчик :{config.price1 * (1.1 ** response['count1'])}
+команда из 3 :{config.price2 * (1.1 ** response['count2'])}
+команда из 5 :{config.price3 * (1.1 ** response['count3'])}
+небольшая студия из 10 :{config.price4 * (1.1 ** response['count4'])}
+крупная студия 30 человек :{config.price5 * (1.1 ** response['count5'])}
+/''', reply_markup=keyboard_buy)
     elif message.text == 'профиль':
         text = f'''ник: {response['nick']}
 уникальный id: {message.from_user.id}_0
@@ -166,6 +172,7 @@ async def call_back(callback: types.CallbackQuery):
         await callback.message.edit_text('успешно куплено')
     else:
         await callback.message.edit_text('не хватает денег')
+
 
 def main():
     executor.start_polling(dp, skip_updates=True)
