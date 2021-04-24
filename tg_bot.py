@@ -121,7 +121,7 @@ async def messages(message: types.Message):
             'score': summ,
             'id_to': id
         }).json()
-        if response['succes']:
+        if response['success']:
             await message.answer(f'успешно переведено {summ} {response["nick_to"]}')
             requests.post(db_server_api + 'set_menu', params={
                 'vk': False,
@@ -168,7 +168,7 @@ async def call_back(callback: types.CallbackQuery):
         'id': callback.from_user.id,
         'vk': False
     })
-    if resrponse.json()['succes']:
+    if resrponse.json()['success']:
         await callback.message.edit_text('успешно куплено')
     else:
         await callback.message.edit_text('не хватает денег')
