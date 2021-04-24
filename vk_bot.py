@@ -45,9 +45,9 @@ keyboard_user = (Keyboard(one_time=False)
                  .add(Text("Меню", {"cmd": "user"}))).get_json()
 
 keyboard_help = (Keyboard(one_time=False)
-                 .add(Text("Да", {"cmd": "YES"}))
+                 .add(Text("Да", {"cmd": "help"}))
                  .row()
-                 .add(Text("Нет, переход в меню", {"cmd": "aio"}))).get_json()
+                 .add(Text("Нет, переход в меню", {"cmd": "help"}))).get_json()
 
 
 # -----клавиатуры
@@ -81,8 +81,14 @@ async def gen_primer(user_id, message):
 
 @bot.on.message(text=["Привет", 'привет'])
 async def hi_handler(message: Message):
-    users_info = await bot.api.users.get(message.from_id)
-    await message.answer("Привет, {}".format(users_info[0].first_name), keyboard=keyboard_hello)
+    users_info = await bot.api.users.get(message.from_id, fields=['city'])
+    print(users_info)
+    if users_info[0].city.title:
+        await message.answer("Привет, {}, о ты из {}".format(users_info[0].first_name, users_info[0].city.title),
+                             keyboard=keyboard_hello)
+    else:
+
+        await message.answer("Привет, {}".format(users_info[0].first_name), keyboard=keyboard_hello)
 
 
 @bot.on.message(text=["/start <item>", "/start", 'Начать', '!start'])
@@ -117,7 +123,12 @@ async def eat_handler(message: Message, item: Optional[str] = None):
     if txt == 'Помочь':
         await message.answer(f"'хотите получить доп деньги? потребуеться решить задачу'", keyboard=keyboard_help)
     elif txt == 'Купить':
-        await message.answer(f"Выберите из списка:", keyboard=keyboard_buy)
+        await message.answer(f'''выберите из списка:
+1 разработчик :{config.price1 * (1.1 ** response['count1'])}
+команда из 3 :{config.price2 * (1.1 ** response['count2'])}
+команда из 5 :{config.price3 * (1.1 ** response['count3'])}
+небольшая студия из 10 :{config.price4 * (1.1 ** response['count4'])}
+крупная студия 30 человек :{config.price5 * (1.1 ** response['count5'])}''', keyboard=keyboard_buy)
     elif txt == 'Профиль':
         text = f'''ник: {response['nick']}
         уникальный id: {user_id}_1
@@ -214,13 +225,23 @@ async def transfer(message: Message, summ: int, id: str):
 
 
 
-@bot.on.message(payload={"cmd": "YES"})
+@bot.on.message(payload={"cmd": "help"})
 async def helper(message: Message, item: Optional[str] = None):
-    global HelP
     user_info = await bot.api.users.get(message.from_id)
     user_id = user_info[0].id
-    await gen_primer(user_id, message)
-    HelP = True
+    response = requests.get(config.db_server_api + 'get_user', params={
+        'id': user_id,
+        'vk': True
+    }).json()
+    txt = message.text.split()[-1]
+    if txt == 'Да':
+        global HelP
+        user_info = await bot.api.users.get(message.from_id)
+        user_id = user_info[0].id
+        await gen_primer(user_id, message)
+        HelP = True
+    else:
+        await message.answer(f'Вернулись', keyboard=keyboard_main)
     # response = requests.get(config.db_server_api + 'get_user', params={
     #     'id': user_id,
     #     'vk': True
@@ -241,7 +262,15 @@ async def helper(message: Message, item: Optional[str] = None):
 @bot.on.message(text=["/puy <item>"])
 @bot.on.message(payload={"cmd": 'puy'})
 async def eat_handler(message: Message, item: Optional[str] = None):
+    user_info = await bot.api.users.get(message.from_id)
+    user_id = user_info[0].id
+    response = requests.get(config.db_server_api + 'get_user', params={
+        'id': user_id,
+        'vk': True
+    }).json()
+    print(1)
     if item is None:
+        print(1)
         txt = message.text.split()
         print(txt[0])
         if txt[0] == '[club194932267|@club194932267]':
@@ -249,7 +278,20 @@ async def eat_handler(message: Message, item: Optional[str] = None):
             print(txt)
         print(txt)
         item = ' '.join(txt)
-    await message.answer(f"Купил {item}", keyboard=keyboard_main)
+        price = [
+        '1 разработчик',
+        'команда из 3',
+        'команда из 5',
+        'небольшая студия из 10',
+        'крупная студия 30 человек']
+        response = requests.post(config.db_server_api + f'buy_{price.index(item.lower()) + 1}', params={
+            'vk': True,
+            'id': user_id,
+        }).json()
+        if item in price:
+            await message.answer(f"Попытался Купить {item}", keyboard=keyboard_main)
+        else:
+            await message.answer('Error', keyboard=keyboard_main)
 
 
 @bot.on.message(text=["/user <item>"])
@@ -260,9 +302,9 @@ async def change(message: Message, item: Optional[str] = None):
         await message.answer(f'Вернулись', keyboard=keyboard_main)
     else:
         await message.answer(f'смена ника. Введите свой новый ник. Формат ввода')
-        await message.answer(f'!nik ник')
+        await message.answer(f'!nick ник')
 
-@bot.on.message(text='!nik <item>')
+@bot.on.message(text='!nick <item>')
 async def transfer(message: Message, item: str):
     nick = item
     user_info = await bot.api.users.get(message.from_id)
@@ -309,7 +351,7 @@ async def hi(message: Message):
                 'id': user_id,
                 'score': 10
             })
-            await message.answer('вам добавили 1')
+            await message.answer('вам добавили 10')
             await gen_primer(user_id, message)
         else:
             await message.answer('неверный ответ', keyboard=keyboard_help)

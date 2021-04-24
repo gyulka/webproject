@@ -81,7 +81,7 @@ async def messages(message: types.Message):
 команда из 5 :{config.price3 * (1.1 ** response['count3'])}
 небольшая студия из 10 :{config.price4 * (1.1 ** response['count4'])}
 крупная студия 30 человек :{config.price5 * (1.1 ** response['count5'])}
-/''', reply_markup=keyboard_buy)
+''', reply_markup=keyboard_buy)
     elif message.text == 'профиль':
         text = f'''ник: {response['nick']}
 уникальный id: {message.from_user.id}_0
@@ -143,7 +143,7 @@ async def messages(message: types.Message):
                 'id': message.from_user.id,
                 'score': 10
             })
-            await message.answer('вам добавили 1')
+            await message.answer('вам добавили 10')
             await gen_primer(message)
         else:
             await message.answer('неверный ответ\nдля нового примера, нажмите на кнопку второй раз')
