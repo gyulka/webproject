@@ -32,7 +32,9 @@ keyboard_user.add(KeyboardButton('назад'))
 
 def shablon1():
     a, b = 0, 1000
-    x = f"({random.randint(-b, b)} {random.choice(['*', '-', '+', '/'])} {random.randint(a, b)}) {random.choice(['*', '-', '+', '/'])} ({random.randint(-b, b)} {random.choice(['*', '-', '+', '/'])} {random.randint(a, b)})"
+    x = '1/10'
+    while eval(x) != (int(eval(x))):
+        x = f"({random.randint(-b, b)} {random.choice(['*', '-', '+', '/'])} {random.randint(a, b)}) {random.choice(['*', '-', '+', '/'])} ({random.randint(-b, b)} {random.choice(['*', '-', '+', '/'])} {random.randint(a, b)})"
     return x, eval(x)
 
 

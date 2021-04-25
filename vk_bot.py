@@ -207,7 +207,7 @@ async def transfer(message: Message, summ: int, id: str):
         'score': summ,
         'id_to': id
     }).json()
-    if response['succes']:
+    if response['success']:
         await message.answer(f'успешно переведено {summ} {response["nick_to"]}')
         requests.post(db_server_api + 'set_menu', params={
             'vk': True,
@@ -222,6 +222,7 @@ async def transfer(message: Message, summ: int, id: str):
 
     else:
         print(response['error'])
+        await message.answer(f'Ошибка перевода')
 
 
 
