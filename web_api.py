@@ -4,7 +4,7 @@ from threading import Thread
 
 import requests
 import schedule
-from flask import Flask, jsonify, request, Blueprint
+from flask import Flask, jsonify, request, Blueprint, render_template, url_for
 
 import config
 from db_help import db_session
@@ -17,11 +17,6 @@ api = Blueprint('api', __name__)
 
 def updater():
     schedule.every().hours.at(':00').do(requests.get, config.db_server_api + 'update')
-    while True:
-        schedule.run_pending()
-
-
-def best_of_3():
     schedule.every(3).days.at('12:00').do(requests.get, config.db_server_api + 'best_of_3')
     while True:
         schedule.run_pending()
@@ -33,13 +28,11 @@ def main():
     session = db_session.create_session()
     th = Thread(target=updater)
     th.start()
-    th = Thread(target=best_of_3)
-    th.start()
 
     port = int(os.environ.get("PORT", 5000))
     app.register_blueprint(api)
-    app.run(host='127.0.0.1', port=port)
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 @api.route('/api/add_user', methods=['POST'])
 def add_user():
@@ -290,7 +283,7 @@ def best_3():
 
 @app.route('/')
 def index():
-    return '<h1>Привет!</h1>'
+    return render_template('index.html', css=url_for('static', filename='css/bootstrap.css'))
 
 
 if __name__ == '__main__':
