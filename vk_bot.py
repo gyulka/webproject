@@ -149,53 +149,7 @@ async def eat_handler(message: Message, item: Optional[str] = None):
         })
         await message.answer('введите сумму и id куда перевести ввиде')
         await message.answer('!go сумма id')
-    # elif response['menu'] == config.TRANSFER:
-    #     summ, id = message.text.split()
-    #     response = requests.post(config.db_server_api + 'transfer', params={
-    #         'vk': True,
-    #         'id': user_id,
-    #         'score': summ,
-    #         'id_to': id
-    #     }).json()
-    #     if response['succes']:
-    #         await message.answer(f'успешно переведено {summ} {response["nick_to"]}')
-    #         requests.post(db_server_api + 'set_menu', params={
-    #             'vk': True,
-    #             'id': user_id,
-    #             'menu': 0
-    #         })
-    #         requests.post(db_server_api + 'set_menu', params={
-    #             'vk': True,
-    #             'id': user_id,
-    #             'menu': config.MAIN
-    #         })
-    #
-    #     else:
-    #         print(response['error'])
-    # elif response['menu'] == config.HELPING:
-    #     if message.text == response['helping']:
-    #         requests.post(db_server_api + 'add_score', params={
-    #             'vk': True,
-    #             'id': user_id,
-    #             'score': 10
-    #         })
-    #         await message.answer('вам добавили 1')
-    #         await gen_primer(user_id, message)
-    #     else:
-    #         await message.answer('неверный ответ\nдля нового примера, нажмите на кнопку второй раз')
-    # elif response['menu'] == config.CHANGE:
-    #     nick = message.text
-    #     requests.post(db_server_api + 'set_nick', params={
-    #         'vk': True,
-    #         'id': user_id,
-    #         'nick': nick
-    #     })
-    #     requests.post(db_server_api + 'set_menu', params={
-    #         'vk': True,
-    #         'id': user_id,
-    #         'menu': config.MAIN
-    #     })
-    #     await message.answer(f'ник успешно изменён на {message.text}', keyboard=keyboard_main)
+
 
 @bot.on.message(text='!go <summ> <id>')
 async def transfer(message: Message, summ: int, id: str):
@@ -220,9 +174,10 @@ async def transfer(message: Message, summ: int, id: str):
             'menu': config.MAIN
         })
 
+    elif response['error'] == 'not enough money':
+        await message.answer(f'не хватает денег')
     else:
         print(response['error'])
-
 
 
 @bot.on.message(payload={"cmd": "help"})
@@ -242,21 +197,6 @@ async def helper(message: Message, item: Optional[str] = None):
         HelP = True
     else:
         await message.answer(f'Вернулись', keyboard=keyboard_main)
-    # response = requests.get(config.db_server_api + 'get_user', params={
-    #     'id': user_id,
-    #     'vk': True
-    # }).json()
-    # if message.text == response['helping']:
-    #     requests.post(db_server_api + 'add_score', params={
-    #         'vk': True,
-    #         'id': user_id,
-    #         'score': 10
-    #     })
-    #     await message.answer('вам добавили 1')
-    #     await gen_primer(user_id, message)
-    # else:
-    #     await message.answer('неверный ответ\nдля нового примера, нажмите на кнопку второй раз')
-
 
 
 @bot.on.message(text=["/puy <item>"])
@@ -279,11 +219,11 @@ async def eat_handler(message: Message, item: Optional[str] = None):
         print(txt)
         item = ' '.join(txt)
         price = [
-        '1 разработчик',
-        'команда из 3',
-        'команда из 5',
-        'небольшая студия из 10',
-        'крупная студия 30 человек']
+            '1 разработчик',
+            'команда из 3',
+            'команда из 5',
+            'небольшая студия из 10',
+            'крупная студия 30 человек']
         if item.lower() in price:
             response = requests.post(config.db_server_api + f'buy_{price.index(item.lower()) + 1}', params={
                 'vk': True,
@@ -297,7 +237,6 @@ async def eat_handler(message: Message, item: Optional[str] = None):
             await message.answer('главное меню', keyboard=keyboard_main)
 
 
-
 @bot.on.message(text=["/user <item>"])
 @bot.on.message(payload={"cmd": 'user'})
 async def change(message: Message, item: Optional[str] = None):
@@ -307,6 +246,7 @@ async def change(message: Message, item: Optional[str] = None):
     else:
         await message.answer(f'смена ника. Введите свой новый ник. Формат ввода')
         await message.answer(f'!nick ник')
+
 
 @bot.on.message(text='!nick <item>')
 async def transfer(message: Message, item: str):
@@ -324,7 +264,6 @@ async def transfer(message: Message, item: str):
         'menu': config.MAIN
     })
     await message.answer(f'ник успешно изменён на {nick}', keyboard=keyboard_main)
-
 
 
 @bot.on.message(text="Доброе утро")
@@ -359,5 +298,6 @@ async def hi(message: Message):
             await gen_primer(user_id, message)
         else:
             await message.answer('неверный ответ', keyboard=keyboard_help)
+
 
 bot.run_forever()

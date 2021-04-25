@@ -134,6 +134,8 @@ async def messages(message: types.Message):
                 'menu': config.MAIN
             })
 
+        elif response['error'] == 'not enough money':
+            await message.answer(f'не хватает денег')
         else:
             print(response['error'])
     elif response['menu'] == config.HELPING:
