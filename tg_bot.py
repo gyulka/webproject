@@ -75,12 +75,12 @@ async def messages(message: types.Message):
         'vk': False
     }).json()
     if message.text == 'купить':
-        await message.answer(f'''выберите из списка:
-1 разработчик :{config.price1 * (1.1 ** response['count1'])}
-команда из 3 :{config.price2 * (1.1 ** response['count2'])}
-команда из 5 :{config.price3 * (1.1 ** response['count3'])}
-небольшая студия из 10 :{config.price4 * (1.1 ** response['count4'])}
-крупная студия 30 человек :{config.price5 * (1.1 ** response['count5'])}
+        await message.answer(f'''выберите из списка баланс - {response['score']}:
+1 разработчик {config.perfomance1}/час :{round(config.price1 * (1.1 ** response['count1']))}
+команда из 3 {config.perfomance1}/час :{round(config.price2 * (1.1 ** response['count2']))}
+команда из 5 {config.perfomance1}/час :{round(config.price3 * (1.1 ** response['count3']))}
+небольшая студия из 10 {config.perfomance1}/час :{round(config.price4 * (1.1 ** response['count4']))}
+крупная студия 30 человек {config.perfomance1}/час :{round(config.price5 * (1.1 ** response['count5']))}
 ''', reply_markup=keyboard_buy)
     elif message.text == 'профиль':
         text = f'''ник: {response['nick']}

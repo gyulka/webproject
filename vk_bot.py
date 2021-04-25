@@ -284,14 +284,18 @@ async def eat_handler(message: Message, item: Optional[str] = None):
         'команда из 5',
         'небольшая студия из 10',
         'крупная студия 30 человек']
-        response = requests.post(config.db_server_api + f'buy_{price.index(item.lower()) + 1}', params={
-            'vk': True,
-            'id': user_id,
-        }).json()
-        if item in price:
-            await message.answer(f"Попытался Купить {item}", keyboard=keyboard_main)
+        if item.lower() in price:
+            response = requests.post(config.db_server_api + f'buy_{price.index(item.lower()) + 1}', params={
+                'vk': True,
+                'id': user_id,
+            }).json()
+            if response['success']:
+                await message.answer(f"успешно куплено {item}", keyboard=keyboard_main)
+            else:
+                await message.answer(f"не хватает денег на {item}", keyboard=keyboard_main)
         else:
-            await message.answer('Error', keyboard=keyboard_main)
+            await message.answer('главное меню', keyboard=keyboard_main)
+
 
 
 @bot.on.message(text=["/user <item>"])
