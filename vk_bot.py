@@ -121,7 +121,7 @@ async def eat_handler(message: Message, item: Optional[str] = None):
     }).json()
     txt = message.text.split()[-1]
     if txt == 'Помочь':
-        await message.answer(f"'хотите получить доп деньги? потребуеться решить задачу'", keyboard=keyboard_help)
+        await message.answer(f"хотите получить доп деньги? потребуеться решить задачу", keyboard=keyboard_help)
     elif txt == 'Купить':
         await message.answer(f'''выберите из списка:
 1 разработчик :{config.price1 * (1.1 ** response['count1'])}
